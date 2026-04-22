@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Accent {
+  cyan
+  violet
+}
+
+enum BubbleState {
+  fresh
+  processing
+  queued
+}
+
+enum BubbleEnergy {
+  high
+  medium
+  low
+}
+
+enum TaskMode {
+  snap
+  creep
+}
+
+enum UserRole {
+  user
+  admin
+}
+
+enum AiLogType {
+  inspiration_decompose
+  inspiration_refine
+  execution_analyze
+}
+
+model User {
+  id                     String                   @id @default(cuid())
+  email                  String                   @unique
+  passwordHash           String
+  nickname               String?
+  role                   UserRole                 @default(user)
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  inspirations           Inspiration[]
+  tasks                  Task[]
+  settings               UserSettings?
+  aiGenerationLogs       AiGenerationLog[]
+}
+
+model UserSettings {
+  id                     String   @id @default(cuid())
+  userId                 String   @unique
+  quickCapturePlaceholder String?
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Inspiration {
+  id                     String                    @id @default(cuid())
+  userId                 String
+  sourceText             String
+  title                  String
+  taskDescription        String
+  eta                    DateTime?
+  energy                 BubbleEnergy
+  state                  BubbleState
+  tags                   String[]
+  createdAt              DateTime                  @default(now())
+  updatedAt              DateTime                  @updatedAt
+  discardedAt            DateTime?
+  user                   User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  milestones             InspirationMilestone[]
+  conversations          InspirationConversation[]
+
+  @@index([userId, createdAt])
+}
+
+model InspirationMilestone {
+  id                     String       @id @default(cuid())
+  inspirationId          String
+  title                  String
+  weight                 Int
+  sortOrder              Int
+  createdAt              DateTime     @default(now())
+  updatedAt              DateTime     @updatedAt
+  inspiration            Inspiration  @relation(fields: [inspirationId], references: [id], onDelete: Cascade)
+
+  @@index([inspirationId, sortOrder])
+}
+
+model InspirationConversation {
+  id                     String       @id @default(cuid())
+  inspirationId          String
+  role                   String
+  content                String
+  createdAt              DateTime     @default(now())
+  inspiration            Inspiration  @relation(fields: [inspirationId], references: [id], onDelete: Cascade)
+
+  @@index([inspirationId, createdAt])
+}
+
+model Task {
+  id                     String            @id @default(cuid())
+  userId                 String
+  label                  String
+  title                  String
+  detail                 String
+  phase                  String
+  progress               Int               @default(0)
+  eta                    String
+  ownerNote              String
+  mode                   TaskMode
+  accent                 Accent
+  rotting                Boolean           @default(false)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+  lastTouchedAt          DateTime          @default(now())
+  completedAt            DateTime?
+  completionReflection   String?
+  user                   User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  milestones             TaskMilestone[]
+  progressLogs           TaskProgressLog[]
+
+  @@index([userId, createdAt])
+  @@index([userId, completedAt])
+}
+
+model TaskMilestone {
+  id                     String     @id @default(cuid())
+  taskId                 String
+  title                  String
+  weight                 Int
+  sortOrder              Int
+  createdAt              DateTime   @default(now())
+  updatedAt              DateTime   @updatedAt
+  task                   Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId, sortOrder])
+}
+
+model TaskProgressLog {
+  id                     String     @id @default(cuid())
+  taskId                 String
+  summary                String
+  progressBefore         Int
+  progressAfter          Int
+  increase               Int
+  createdAt              DateTime   @default(now())
+  task                   Task       @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId, createdAt])
+}
+
+model AiGenerationLog {
+  id                     String     @id @default(cuid())
+  userId                 String
+  logType                AiLogType
+  model                  String?
+  relatedType            String?
+  relatedId              String?
+  promptExcerpt          String?
+  responseExcerpt        String?
+  createdAt              DateTime   @default(now())
+  user                   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([relatedType, relatedId])
+}
