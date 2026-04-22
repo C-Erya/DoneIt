@@ -47,8 +47,17 @@ function matchesOriginPattern(origin: string, pattern: string) {
   return origin === pattern;
 }
 
+function isVercelOrigin(origin: string) {
+  try {
+    const { protocol, hostname } = new URL(origin);
+    return protocol === "https:" && hostname.endsWith(".vercel.app");
+  } catch {
+    return false;
+  }
+}
+
 function isAllowedOrigin(origin: string) {
-  return clientOrigins.some((pattern) => matchesOriginPattern(origin, pattern));
+  return isVercelOrigin(origin) || clientOrigins.some((pattern) => matchesOriginPattern(origin, pattern));
 }
 
 app.use(helmet());
