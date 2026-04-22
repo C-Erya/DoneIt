@@ -11,16 +11,31 @@ const navItems = [
   { to: "/honor", label: "荣誉中心", Icon: Sparkles }
 ];
 
+type ThemeMode = "dark" | "light";
+
+const THEME_STORAGE_KEY = "doneit_theme_mode";
+
 export function AppLayout() {
   const { data } = useApi(api.getOverview);
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showHelpDialog, setShowHelpDialog] = useState(false);
+  const [showSettingsDialog, setShowSettingsDialog] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [nickname, setNickname] = useState("");
   const [authError, setAuthError] = useState<string | null>(null);
   const [authPending, setAuthPending] = useState(false);
+  const [themeMode, setThemeMode] = useState<ThemeMode>(() => {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    return stored === "light" ? "light" : "dark";
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = themeMode;
+    window.localStorage.setItem(THEME_STORAGE_KEY, themeMode);
+  }, [themeMode]);
 
   useEffect(() => {
     void api
@@ -86,7 +101,7 @@ export function AppLayout() {
         </nav>
 
         <div className="sidebar-tools">
-          <button type="button" className="tool-link">
+          <button type="button" className="tool-link" onClick={() => setShowHelpDialog(true)}>
             <CircleHelp className="tool-icon" />
             <span>帮助</span>
           </button>
@@ -95,7 +110,7 @@ export function AppLayout() {
 
       <main className="page-frame">
         <div className="top-actions">
-          <button type="button" className="top-action-button top-action-secondary">
+          <button type="button" className="top-action-button top-action-secondary" onClick={() => setShowSettingsDialog(true)}>
             <Settings className="tool-icon" />
             <span>设置</span>
           </button>
@@ -104,6 +119,69 @@ export function AppLayout() {
           </button>
         </div>
         <Outlet />
+
+        {showHelpDialog ? (
+          <div className="modal-backdrop" role="presentation" onClick={() => setShowHelpDialog(false)}>
+            <section className="panel help-dialog" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+              <button type="button" className="panel-close" aria-label="关闭帮助" onClick={() => setShowHelpDialog(false)}>
+                x
+              </button>
+              <div className="panel-label">帮助</div>
+              <div className="help-dialog-body">
+                <div className="help-section">
+                  <h3>执行中心</h3>
+                  <p className="muted">在这里和 AI 对话记录今日进展，点击“AI 拆解今日进度”后在右侧面板逐项确认推进。</p>
+                  <p className="muted">下方任务卡可查看详情与日志，必要时可编辑或回退到灵感池。</p>
+                </div>
+                <div className="help-section">
+                  <h3>灵感中心</h3>
+                  <p className="muted">输入新的灵感，点击“AI 拆解灵感”生成任务草稿；也可以继续补充，让 AI 重新生成里程碑与计划。</p>
+                  <p className="muted">下方灵感池保存未转成任务的想法，点击气泡可继续完善。</p>
+                </div>
+                <div className="help-section">
+                  <h3>荣誉中心</h3>
+                  <p className="muted">上方星云展示进行中与已完成任务，点击星星可查看任务信息、里程碑完成时间与完成心得。</p>
+                  <p className="muted">下方列表快速浏览任务名称与进度，并与星云联动定位。</p>
+                </div>
+              </div>
+            </section>
+          </div>
+        ) : null}
+
+        {showSettingsDialog ? (
+          <div className="modal-backdrop" role="presentation" onClick={() => setShowSettingsDialog(false)}>
+            <section className="panel settings-dialog" role="dialog" aria-modal="true" onClick={(event) => event.stopPropagation()}>
+              <button type="button" className="panel-close" aria-label="关闭设置" onClick={() => setShowSettingsDialog(false)}>
+                x
+              </button>
+              <div className="panel-label">设置</div>
+              <div className="settings-dialog-body">
+                <div className="settings-row">
+                  <div className="settings-row-title">主题</div>
+                  <div className="settings-row-subtitle muted">默认深色，可切换为浅色。</div>
+                </div>
+                <div className="settings-choice-row" role="radiogroup" aria-label="主题选择">
+                  <button
+                    type="button"
+                    className={themeMode === "dark" ? "choice-pill choice-pill-active" : "choice-pill"}
+                    onClick={() => setThemeMode("dark")}
+                    aria-pressed={themeMode === "dark"}
+                  >
+                    深色
+                  </button>
+                  <button
+                    type="button"
+                    className={themeMode === "light" ? "choice-pill choice-pill-active" : "choice-pill"}
+                    onClick={() => setThemeMode("light")}
+                    aria-pressed={themeMode === "light"}
+                  >
+                    浅色
+                  </button>
+                </div>
+              </div>
+            </section>
+          </div>
+        ) : null}
 
         {showAuthDialog ? (
           <div className="modal-backdrop" role="presentation" onClick={() => setShowAuthDialog(false)}>
