@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "./db.js";
 import { dashboardData } from "./data/dashboard.js";
 import {
@@ -626,7 +627,7 @@ export async function createTaskFromInspiration(input: {
   const taskCount = await prisma.task.count({ where: { userId: resolvedUserId } });
   const accent: Accent = taskCount % 2 === 0 ? "cyan" : "violet";
   const createdAt = new Date();
-  const createdTask = await prisma.$transaction(async (tx) => {
+  const createdTask = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.inspiration.updateMany({
       where: {
         userId: resolvedUserId,
@@ -694,7 +695,7 @@ export async function holdInspiration(input: {
     }
   });
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     if (existing) {
       await tx.inspiration.update({
         where: { id: existing.id },
@@ -806,7 +807,7 @@ export async function confirmTaskProgress(
   const actualIncrease = nextProgress - progressBefore;
   const touchedAt = new Date();
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.task.update({
       where: { id: taskId },
       data: {
@@ -848,7 +849,7 @@ export async function completeTask(taskId: string, reflection: string, userId?: 
 
   const completedAt = new Date();
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.task.update({
       where: { id: taskId },
       data: {
@@ -896,7 +897,7 @@ export async function updateTaskDetails(
   }
 
   const updatedAt = new Date();
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.task.update({
       where: { id: taskId },
       data: {
@@ -944,7 +945,7 @@ export async function returnTaskToInspiration(taskId: string, userId?: string) {
     }
   });
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     if (!alreadyExists) {
       const bubble = buildBubbleFromTask(task);
       await tx.inspiration.create({

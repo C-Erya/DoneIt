@@ -1,5 +1,6 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "./db.js";
 import { dashboardData } from "./data/dashboard.js";
 import type { Accent, AppState, BubbleEnergy, BubbleState, TaskMode } from "./types.js";
@@ -17,6 +18,38 @@ type DbProgressLog = {
   progressAfter: number;
   increase: number;
   createdAt: Date;
+};
+
+type DbInspirationRecord = {
+  id: string;
+  title: string;
+  energy: string;
+  tags: string[];
+  state: string;
+  createdAt: Date;
+  taskDescription: string;
+  eta: Date | null;
+  milestones: DbMilestone[];
+};
+
+type DbTaskRecord = {
+  id: string;
+  label: string;
+  title: string;
+  detail: string;
+  createdAt: Date;
+  completedAt: Date | null;
+  completionReflection: string | null;
+  phase: string;
+  progress: number;
+  eta: string;
+  ownerNote: string;
+  mode: string;
+  accent: string;
+  rotting: boolean;
+  lastTouchedAt: Date;
+  milestones: DbMilestone[];
+  progressLogs: DbProgressLog[];
 };
 
 const DATA_DIR = path.resolve(process.cwd(), "server", "data");
@@ -196,7 +229,7 @@ async function saveStateToJson(nextState: AppState) {
 async function saveStateToDatabase(nextState: AppState) {
   const user = await ensureDemoUser();
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.userSettings.upsert({
       where: { userId: user.id },
       update: {
@@ -322,7 +355,7 @@ async function loadStateFromDatabase(): Promise<AppState> {
       ...staticState.inspiration,
       quickCapturePlaceholder:
         settings?.quickCapturePlaceholder ?? staticState.inspiration.quickCapturePlaceholder,
-      bubbles: inspirations.map((bubble) => ({
+      bubbles: inspirations.map((bubble: DbInspirationRecord) => ({
         id: bubble.id,
         title: bubble.title,
         energy: bubble.energy as BubbleEnergy,
@@ -340,7 +373,7 @@ async function loadStateFromDatabase(): Promise<AppState> {
       draftTemplate: staticState.inspiration.draftTemplate
     },
     execution: staticState.execution,
-    tasks: tasks.map((task) => ({
+    tasks: tasks.map((task: DbTaskRecord) => ({
       id: task.id,
       label: task.label,
       title: task.title,
