@@ -401,13 +401,25 @@ button {
   resize: none;
 }
 
+:root[data-theme="light"] .omni-input {
+  border-color: rgba(13, 19, 32, 0.22);
+  background: rgba(255, 255, 255, 0.86);
+  color: rgba(13, 19, 32, 0.86);
+}
+
+:root[data-theme="light"] .omni-input::placeholder {
+  color: rgba(13, 19, 32, 0.45);
+}
+
+:root[data-theme="light"] .omni-input:focus {
+  outline: none;
+  border-color: rgba(0, 107, 134, 0.55);
+  box-shadow: 0 0 0 4px rgba(0, 107, 134, 0.10);
+}
+
 .clean-input-panel {
   gap: 16px;
   padding: 22px 24px;
-}
-
-:root[data-theme="light"] .clean-input-panel {
-  border: 2px solid rgba(0, 0, 0, 0.78);
 }
 
 .clean-input-panel .omni-input {
@@ -477,10 +489,11 @@ button {
 
 :root[data-theme="light"] .hint-bubble,
 :root[data-theme="light"] .inspiration-hint-bubble {
-  border: 2px solid rgba(0, 0, 0, 0.78);
-  background: rgba(255, 255, 255, 0.92);
-  color: #0d1320;
-  box-shadow: 0 14px 40px rgba(10, 20, 40, 0.08);
+  border: 1px solid rgba(13, 19, 32, 0.14);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(0, 107, 134, 0.18), transparent 38%),
+    rgba(13, 19, 32, 0.03);
+  box-shadow: 0 16px 48px rgba(10, 20, 40, 0.08);
 }
 
 .hint-link {
@@ -802,13 +815,14 @@ button {
 }
 
 :root[data-theme="light"] .cta-button {
-  border: 2px solid rgba(0, 0, 0, 0.78);
-  background: rgba(255, 255, 255, 0.96);
-  color: #0d1320;
+  border: 1px solid rgba(13, 19, 32, 0.22);
+  background: rgba(255, 255, 255, 0.92);
+  color: rgba(13, 19, 32, 0.92);
 }
 
 :root[data-theme="light"] .cta-button:hover {
   background: rgba(255, 255, 255, 1);
+  border-color: rgba(13, 19, 32, 0.30);
 }
 
 :root[data-theme="light"] .cta-button:disabled {
@@ -1132,7 +1146,7 @@ button {
 }
 
 :root[data-theme="light"] .nebula-canvas {
-  border: 2px solid rgba(0, 0, 0, 0.78);
+  border: 1px solid rgba(13, 19, 32, 0.16);
   background:
     radial-gradient(circle at 20% 20%, rgba(13, 19, 32, 0.16) 1px, transparent 1px),
     radial-gradient(circle at 70% 30%, rgba(13, 19, 32, 0.14) 1px, transparent 1px),
@@ -1233,8 +1247,8 @@ button {
 }
 
 :root[data-theme="light"] .achievement-card {
-  border: 2px solid rgba(0, 0, 0, 0.78);
-  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(13, 19, 32, 0.14);
+  background: rgba(255, 255, 255, 0.86);
 }
 
 .achievement-card span {
@@ -1312,10 +1326,7 @@ button {
 
 :root[data-theme="light"] .spark-bubble,
 :root[data-theme="light"] .spark-bubble-freeform {
-  border: 2px solid rgba(0, 0, 0, 0.78);
-  background:
-    radial-gradient(circle at 18% 18%, rgba(13, 19, 32, 0.06), transparent 32%),
-    rgba(255, 255, 255, 0.84);
+  border: 1px solid rgba(13, 19, 32, 0.14);
 }
 
 .spark-bubble strong {
