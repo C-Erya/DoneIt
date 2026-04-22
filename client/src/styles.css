@@ -1032,6 +1032,20 @@ button {
   font: inherit;
 }
 
+:root[data-theme="light"] .auth-dialog .field-input,
+:root[data-theme="light"] .auth-dialog .field-textarea {
+  border-color: rgba(13, 19, 32, 0.32);
+  background: rgba(255, 255, 255, 0.88);
+  color: rgba(13, 19, 32, 0.92);
+}
+
+:root[data-theme="light"] .auth-dialog .field-input:focus,
+:root[data-theme="light"] .auth-dialog .field-textarea:focus {
+  outline: none;
+  border-color: rgba(13, 19, 32, 0.58);
+  box-shadow: 0 0 0 4px rgba(13, 19, 32, 0.10);
+}
+
 .field-textarea {
   min-height: 92px;
   resize: none;
