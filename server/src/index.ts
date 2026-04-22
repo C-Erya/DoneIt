@@ -28,6 +28,7 @@ import {
 
 const app = express();
 const port = Number(process.env.PORT ?? 3001);
+
 function normalizeOrigin(value: string) {
   return value.trim().replace(/\/+$/, "");
 }
@@ -37,12 +38,25 @@ const clientOrigins = (process.env.CLIENT_ORIGIN ?? "http://localhost:5173")
   .map((origin) => normalizeOrigin(origin))
   .filter(Boolean);
 
+function matchesOriginPattern(origin: string, pattern: string) {
+  if (pattern.includes("*")) {
+    const escapedPattern = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replace(/\*/g, ".*");
+    return new RegExp(`^${escapedPattern}$`).test(origin);
+  }
+
+  return origin === pattern;
+}
+
+function isAllowedOrigin(origin: string) {
+  return clientOrigins.some((pattern) => matchesOriginPattern(origin, pattern));
+}
+
 app.use(helmet());
 app.use(
   cors({
     origin(origin, callback) {
       const normalizedOrigin = origin ? normalizeOrigin(origin) : "";
-      if (!origin || clientOrigins.includes(normalizedOrigin)) {
+      if (!origin || isAllowedOrigin(normalizedOrigin)) {
         callback(null, true);
         return;
       }
