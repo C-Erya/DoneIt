@@ -179,7 +179,27 @@ function coerceNumber(value: unknown, fallback: number) {
   return Number.isFinite(numberValue) ? numberValue : fallback;
 }
 
+function formatStageLabel(completedMilestones: number, milestoneCount: number) {
+  if (milestoneCount <= 0) {
+    return "阶段 00/00";
+  }
+
+  const currentStage = Math.min(milestoneCount, Math.max(1, completedMilestones + 1));
+  const numerator = String(currentStage).padStart(2, "0");
+  const denominator = String(milestoneCount).padStart(2, "0");
+  return `阶段 ${numerator}/${denominator}`;
+}
+
 function mapTaskRecord(record: TaskRecord): Task {
+  const milestones = record.milestones
+    .slice()
+    .sort((left, right) => left.sortOrder - right.sortOrder)
+    .map((milestone) => ({
+      id: milestone.id,
+      title: milestone.title,
+      weight: milestone.weight
+    }));
+
   return {
     id: record.id,
     label: record.label,
@@ -188,7 +208,7 @@ function mapTaskRecord(record: TaskRecord): Task {
     createdAt: record.createdAt.toISOString(),
     completedAt: record.completedAt?.toISOString(),
     completionReflection: record.completionReflection ?? "",
-    phase: record.phase,
+    phase: formatStageLabel(completedMilestonesFromProgress(record.progress, milestones), milestones.length),
     progress: record.progress,
     eta: record.eta,
     ownerNote: record.ownerNote,
@@ -196,14 +216,7 @@ function mapTaskRecord(record: TaskRecord): Task {
     accent: record.accent as Accent,
     rotting: record.rotting,
     lastTouchedAt: record.lastTouchedAt.toISOString(),
-    milestones: record.milestones
-      .slice()
-      .sort((left, right) => left.sortOrder - right.sortOrder)
-      .map((milestone) => ({
-        id: milestone.id,
-        title: milestone.title,
-        weight: milestone.weight
-      })),
+    milestones,
     progressLogs: record.progressLogs
       .slice()
       .sort((left, right) => right.createdAt.getTime() - left.createdAt.getTime())
