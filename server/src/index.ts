@@ -28,16 +28,21 @@ import {
 
 const app = express();
 const port = Number(process.env.PORT ?? 3001);
+function normalizeOrigin(value: string) {
+  return value.trim().replace(/\/+$/, "");
+}
+
 const clientOrigins = (process.env.CLIENT_ORIGIN ?? "http://localhost:5173")
   .split(",")
-  .map((origin) => origin.trim())
+  .map((origin) => normalizeOrigin(origin))
   .filter(Boolean);
 
 app.use(helmet());
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || clientOrigins.includes(origin)) {
+      const normalizedOrigin = origin ? normalizeOrigin(origin) : "";
+      if (!origin || clientOrigins.includes(normalizedOrigin)) {
         callback(null, true);
         return;
       }
