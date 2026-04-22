@@ -95,6 +95,11 @@ button {
   box-shadow: var(--shadow);
 }
 
+:root[data-theme="light"] .sidebar {
+  background: rgba(255, 255, 255, 0.88);
+  border-color: rgba(15, 20, 26, 0.18);
+}
+
 .brand-title {
   font-size: 22px;
   font-weight: 700;
@@ -143,6 +148,11 @@ button {
   border-color: rgba(0, 210, 255, 0.22);
   background: rgba(255, 255, 255, 0.03);
   color: var(--cyan-strong);
+}
+
+:root[data-theme="light"] .nav-link:hover,
+:root[data-theme="light"] .nav-link-active {
+  background: rgba(13, 19, 32, 0.03);
 }
 
 .sidebar-tools {
@@ -396,6 +406,10 @@ button {
   padding: 22px 24px;
 }
 
+:root[data-theme="light"] .clean-input-panel {
+  border: 2px solid rgba(0, 0, 0, 0.78);
+}
+
 .clean-input-panel .omni-input {
   height: 112px;
   min-height: 112px;
@@ -459,6 +473,14 @@ button {
   color: var(--text);
   font-size: 18px;
   box-shadow: 0 18px 50px rgba(0, 210, 255, 0.08);
+}
+
+:root[data-theme="light"] .hint-bubble,
+:root[data-theme="light"] .inspiration-hint-bubble {
+  border: 2px solid rgba(0, 0, 0, 0.78);
+  background: rgba(255, 255, 255, 0.92);
+  color: #0d1320;
+  box-shadow: 0 14px 40px rgba(10, 20, 40, 0.08);
 }
 
 .hint-link {
@@ -779,6 +801,21 @@ button {
   font-weight: 800;
 }
 
+:root[data-theme="light"] .cta-button {
+  border: 2px solid rgba(0, 0, 0, 0.78);
+  background: rgba(255, 255, 255, 0.96);
+  color: #0d1320;
+}
+
+:root[data-theme="light"] .cta-button:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+:root[data-theme="light"] .cta-button:disabled {
+  border-color: rgba(0, 0, 0, 0.24);
+  color: rgba(13, 19, 32, 0.46);
+}
+
 .cta-button-compact {
   width: auto;
   justify-self: start;
@@ -1094,6 +1131,16 @@ button {
   background-size: 160px 160px, 220px 220px, 260px 260px, auto;
 }
 
+:root[data-theme="light"] .nebula-canvas {
+  border: 2px solid rgba(0, 0, 0, 0.78);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(13, 19, 32, 0.16) 1px, transparent 1px),
+    radial-gradient(circle at 70% 30%, rgba(13, 19, 32, 0.14) 1px, transparent 1px),
+    radial-gradient(circle at 50% 70%, rgba(13, 19, 32, 0.12) 1px, transparent 1px),
+    rgba(255, 255, 255, 0.96);
+  background-size: 180px 180px, 240px 240px, 280px 280px, auto;
+}
+
 .nebula-haze {
   position: absolute;
   border-radius: 999px;
@@ -1185,6 +1232,11 @@ button {
   background: rgba(255, 255, 255, 0.04);
 }
 
+:root[data-theme="light"] .achievement-card {
+  border: 2px solid rgba(0, 0, 0, 0.78);
+  background: rgba(255, 255, 255, 0.92);
+}
+
 .achievement-card span {
   color: var(--muted);
   line-height: 1.6;
@@ -1256,6 +1308,14 @@ button {
     rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.06);
   text-align: left;
+}
+
+:root[data-theme="light"] .spark-bubble,
+:root[data-theme="light"] .spark-bubble-freeform {
+  border: 2px solid rgba(0, 0, 0, 0.78);
+  background:
+    radial-gradient(circle at 18% 18%, rgba(13, 19, 32, 0.06), transparent 32%),
+    rgba(255, 255, 255, 0.84);
 }
 
 .spark-bubble strong {
