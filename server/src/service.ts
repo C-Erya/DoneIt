@@ -424,16 +424,19 @@ function normalizeConfirmItems(
       matchedMilestoneIndex >= 0
         ? milestoneProgressAt(task.milestones, matchedMilestoneIndex)
         : task.progress;
-    const modelAdjustedIncrease = item ? coerceNumber(item.adjustedIncrease, 0) : 0;
-    const modelSuggestedIncrease = item ? coerceNumber(item.suggestedIncrease, modelAdjustedIncrease) : 0;
-    const modelResultingProgress = item
-      ? coerceNumber(item.resultingProgress, task.progress + modelAdjustedIncrease)
-      : task.progress;
+    const maxAllowedIncrease = Math.max(0, stageMaxProgress - task.progress);
+    const requiredIncrease = Math.max(0, Math.min(maxAllowedIncrease, requiredProgress - task.progress));
+
+    // Default "adjusted increase" to the model's suggested increase (clamped to the current stage max).
+    // This makes the UI editable value start aligned with "AI suggested".
+    const modelSuggestedIncrease = item ? coerceNumber(item.suggestedIncrease, 0) : 0;
+    const suggestedIncrease = Math.max(0, Math.min(maxAllowedIncrease, modelSuggestedIncrease));
+
+    const correctedIncrease = Math.max(requiredIncrease, suggestedIncrease);
     const correctedResultingProgress = Math.max(
       task.progress,
-      Math.min(stageMaxProgress, Math.max(modelResultingProgress, requiredProgress))
+      Math.min(stageMaxProgress, task.progress + correctedIncrease)
     );
-    const correctedIncrease = Math.max(0, correctedResultingProgress - task.progress);
     const milestoneLabel =
       matchedMilestoneIndex >= 0
         ? `已推进至：${task.milestones[matchedMilestoneIndex].title}`
@@ -444,8 +447,8 @@ function normalizeConfirmItems(
       taskName: task.title,
       suggestionType,
       suggestionReason,
-      suggestedIncrease: Math.max(0, Math.min(100, Math.max(modelSuggestedIncrease, correctedIncrease))),
-      adjustedIncrease: Math.max(0, Math.min(100, correctedIncrease)),
+      suggestedIncrease,
+      adjustedIncrease: correctedIncrease,
       resultingProgress: correctedResultingProgress,
       stageMaxProgress,
       milestoneHit: `${milestoneLabel} (${stageMaxProgress}%)`,
