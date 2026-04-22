@@ -4,6 +4,21 @@ import { prisma } from "./db.js";
 import { dashboardData } from "./data/dashboard.js";
 import type { Accent, AppState, BubbleEnergy, BubbleState, TaskMode } from "./types.js";
 
+type DbMilestone = {
+  id: string;
+  title: string;
+  weight: number;
+};
+
+type DbProgressLog = {
+  id: string;
+  summary: string;
+  progressBefore: number;
+  progressAfter: number;
+  increase: number;
+  createdAt: Date;
+};
+
 const DATA_DIR = path.resolve(process.cwd(), "server", "data");
 const STATE_PATH = path.join(DATA_DIR, "app-state.json");
 
@@ -315,7 +330,7 @@ async function loadStateFromDatabase(): Promise<AppState> {
         state: bubble.state as BubbleState,
         createdAt: bubble.createdAt.toISOString(),
         taskDescription: bubble.taskDescription,
-        milestones: bubble.milestones.map((milestone) => ({
+        milestones: bubble.milestones.map((milestone: DbMilestone) => ({
           id: milestone.id,
           title: milestone.title,
           weight: milestone.weight
@@ -341,12 +356,12 @@ async function loadStateFromDatabase(): Promise<AppState> {
       accent: task.accent as Accent,
       rotting: task.rotting,
       lastTouchedAt: task.lastTouchedAt.toISOString(),
-      milestones: task.milestones.map((milestone) => ({
+      milestones: task.milestones.map((milestone: DbMilestone) => ({
         id: milestone.id,
         title: milestone.title,
         weight: milestone.weight
       })),
-      progressLogs: task.progressLogs.map((log) => ({
+      progressLogs: task.progressLogs.map((log: DbProgressLog) => ({
         id: log.id,
         date: log.createdAt.toISOString(),
         summary: log.summary,
